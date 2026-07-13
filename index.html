@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Countdown to 21:00</title>
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0a0f14;
+    font-family: 'Courier New', monospace;
+    color: #fff;
+  }
+  .panel {
+    text-align: center;
+    border: 1px solid #1f3a3a;
+    padding: 70px 105px;
+    border-radius: 14px;
+    background: #0f1720;
+    box-shadow: 0 0 30px rgba(79, 209, 197, 0.15);
+  }
+  h1 {
+    font-size: 30px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: #33ccff;
+    margin-bottom: 35px;
+    font-weight: normal;
+  }
+  .clock {
+    font-size: 120px;
+    letter-spacing: 7px;
+    font-variant-numeric: tabular-nums;
+  }
+  .status {
+    margin-top: 28px;
+    font-size: 30px;
+    color: #33ccff;
+  }
+  .set-row {
+    margin-top: 42px;
+    display: flex;
+    gap: 18px;
+    justify-content: center;
+    align-items: center;
+  }
+  input[type="time"] {
+    background: #0a0f14;
+    border: 1px solid #1f3a3a;
+    color: #33ccff;
+    font-family: 'Courier New', monospace;
+    font-size: 30px;
+    padding: 10px 18px;
+    border-radius: 6px;
+  }
+  button {
+    background: #143b38;
+    border: 1px solid #4fd1c5;
+    color: #33ccff;
+    font-family: 'Courier New', monospace;
+    font-size: 30px;
+    letter-spacing: 2px;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #1a4d49;
+  }
+</style>
+</head>
+<body>
+  <div class="panel">
+    <h1 id="title">Time Remaining Until 21:00</h1>
+    <div class="clock" id="clock">--:--:--</div>
+    <div class="status" id="status"></div>
+    <div class="set-row">
+      <input type="time" id="timeInput" value="21:00">
+      <button onclick="setTarget()">Set</button>
+    </div>
+  </div>
+
+<script>
+let targetHours = 21;
+let targetMinutes = 0;
+
+function setTarget() {
+  const val = document.getElementById('timeInput').value;
+  if (!val) return;
+  const [h, m] = val.split(':').map(Number);
+  targetHours = h;
+  targetMinutes = m;
+  document.getElementById('title').textContent =
+    'Time Remaining Until ' + String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+  update();
+}
+
+function update() {
+  const now = new Date();
+  const target = new Date();
+  target.setHours(targetHours, targetMinutes, 0, 0);
+
+  let diff = target - now;
+  const statusEl = document.getElementById('status');
+  const timeString = String(targetHours).padStart(2, '0') + ':' + String(targetMinutes).padStart(2, '0');
+
+  if (diff <= 0) {
+    // Target already passed today, roll to tomorrow
+    target.setDate(target.getDate() + 1);
+    diff = target - now;
+    statusEl.textContent = "Target time passed for today. Counting to tomorrow's " + timeString + ".";
+  } else {
+    statusEl.textContent = "Countdown in progress.";
+  }
+
+  const hours = Math.floor(diff / 3600000);
+  const minutes = Math.floor((diff % 3600000) / 60000);
+  const seconds = Math.floor((diff % 60000) / 1000);
+
+  document.getElementById('clock').textContent =
+    String(hours).padStart(2, '0') + ':' +
+    String(minutes).padStart(2, '0') + ':' +
+    String(seconds).padStart(2, '0');
+}
+
+update();
+setInterval(update, 1000);
+</script>
+</body>
+</html>
