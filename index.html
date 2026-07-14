@@ -75,7 +75,7 @@
 </head>
 <body>
   <div class="panel">
-    <h1 id="title">Countdown Timer</h1>
+    <h1 id="title">Time Remaining Until 21:00</h1>
     <div class="clock" id="clock">--:--:--</div>
     <div class="status" id="status"></div>
     <div class="set-row">
@@ -108,14 +108,7 @@ function update() {
   const statusEl = document.getElementById('status');
   const timeString = String(targetHours).padStart(2, '0') + ':' + String(targetMinutes).padStart(2, '0');
 
-  if (diff <= 0) {
-    // Target already passed today, roll to tomorrow
-    target.setDate(target.getDate() + 1);
-    diff = target - now;
-    statusEl.textContent = "Counting to tomorrow's " + timeString + ".";
-  } else {
-    statusEl.textContent = "Countdown in progress.";
-  }
+
 
   const hours = Math.floor(diff / 3600000);
   const minutes = Math.floor((diff % 3600000) / 60000);
