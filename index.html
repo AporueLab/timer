@@ -79,7 +79,7 @@
     <div class="clock" id="clock">--:--:--</div>
     <div class="status" id="status"></div>
     <div class="set-row">
-      <input type="time" id="timeInput" value="21:00" onkeydown="if (event.key === 'Enter') setTarget()">
+      <input type="time" id="timeInput" value="21:00" onkeydown="if (event.key === 'Enter') { setTarget(); this.blur(); }">
       <button onclick="setTarget()">Set</button>
       <button onclick="resetTarget()">Reset</button>
     </div>
