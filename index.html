@@ -48,23 +48,25 @@
     justify-content: center;
     align-items: center;
   }
-  input[type="time"] {
+  input[type="text"] {
     background: #0a0f14;
     border: 1px solid #1f3a3a;
     color: #33ccff;
     font-family: 'Courier New', monospace;
-    font-size: 25px;
+    font-size: 30px;
     padding: 10px 18px;
     border-radius: 6px;
+    width: 110px;
+    text-align: center;
   }
   button {
     background: #143b38;
     border: 1px solid #4fd1c5;
     color: #33ccff;
     font-family: 'Courier New', monospace;
-    font-size: 25px;
+    font-size: 30px;
     letter-spacing: 2px;
-    padding: 12px 24px;
+    padding: 9px 18px;
     border-radius: 6px;
     cursor: pointer;
   }
@@ -79,7 +81,7 @@
     <div class="clock" id="clock">--:--:--</div>
     <div class="status" id="status"></div>
     <div class="set-row">
-      <input type="time" id="timeInput" value="21:00" onkeydown="if (event.key === 'Enter') { setTarget(); this.blur(); }">
+      <input type="text" id="timeInput" value="21:00" maxlength="5" inputmode="numeric" placeholder="HH:MM" onkeydown="if (event.key === 'Enter') { setTarget(); this.blur(); }">
       <button onclick="setTarget()">Set</button>
       <button onclick="resetTarget()">Reset</button>
     </div>
@@ -99,6 +101,7 @@ function applyTarget(h, m, save) {
   const timeString = String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
   document.getElementById('title').textContent = 'Time Remaining Until ' + timeString;
   document.getElementById('timeInput').value = timeString;
+  document.getElementById('status').textContent = '';
   if (save) {
     try {
       localStorage.setItem(STORAGE_KEY, timeString);
@@ -110,9 +113,15 @@ function applyTarget(h, m, save) {
 }
 
 function setTarget() {
-  const val = document.getElementById('timeInput').value;
-  if (!val) return;
-  const [h, m] = val.split(':').map(Number);
+  const val = document.getElementById('timeInput').value.trim();
+  const match = val.match(/^([01]?[0-9]|2[0-3]):([0-5][0-9])$/);
+  const statusEl = document.getElementById('status');
+  if (!match) {
+    statusEl.textContent = 'Enter a valid 24-hour time as HH:MM';
+    return;
+  }
+  const h = Number(match[1]);
+  const m = Number(match[2]);
   applyTarget(h, m, true);
 }
 
