@@ -81,22 +81,63 @@
     <div class="set-row">
       <input type="time" id="timeInput" value="21:00">
       <button onclick="setTarget()">Set</button>
+      <button onclick="resetTarget()">Reset</button>
     </div>
   </div>
 
 <script>
-let targetHours = 21;
-let targetMinutes = 0;
+const DEFAULT_HOURS = 21;
+const DEFAULT_MINUTES = 0;
+const STORAGE_KEY = 'countdownTargetTime';
+
+let targetHours = DEFAULT_HOURS;
+let targetMinutes = DEFAULT_MINUTES;
+
+function applyTarget(h, m, save) {
+  targetHours = h;
+  targetMinutes = m;
+  const timeString = String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+  document.getElementById('title').textContent = 'Time Remaining Until ' + timeString;
+  document.getElementById('timeInput').value = timeString;
+  if (save) {
+    try {
+      localStorage.setItem(STORAGE_KEY, timeString);
+    } catch (e) {
+      // Storage unavailable (e.g. private browsing); the timer still works, it just won't persist.
+    }
+  }
+  update();
+}
 
 function setTarget() {
   const val = document.getElementById('timeInput').value;
   if (!val) return;
   const [h, m] = val.split(':').map(Number);
-  targetHours = h;
-  targetMinutes = m;
-  document.getElementById('title').textContent =
-    'Time Remaining Until ' + String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
-  update();
+  applyTarget(h, m, true);
+}
+
+function resetTarget() {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch (e) {
+    // Ignore if storage isn't available
+  }
+  applyTarget(DEFAULT_HOURS, DEFAULT_MINUTES, false);
+}
+
+function loadSavedTarget() {
+  let saved = null;
+  try {
+    saved = localStorage.getItem(STORAGE_KEY);
+  } catch (e) {
+    // Ignore if storage isn't available
+  }
+  if (saved) {
+    const [h, m] = saved.split(':').map(Number);
+    applyTarget(h, m, false);
+  } else {
+    applyTarget(DEFAULT_HOURS, DEFAULT_MINUTES, false);
+  }
 }
 
 function update() {
@@ -106,9 +147,12 @@ function update() {
 
   let diff = target - now;
   const statusEl = document.getElementById('status');
-  const timeString = String(targetHours).padStart(2, '0') + ':' + String(targetMinutes).padStart(2, '0');
 
-
+  if (diff <= 0) {
+    // Target already passed today (or falls after midnight relative to now), roll to the next occurrence
+    target.setDate(target.getDate() + 1);
+    diff = target - now;
+  }
 
   const hours = Math.floor(diff / 3600000);
   const minutes = Math.floor((diff % 3600000) / 60000);
@@ -120,7 +164,7 @@ function update() {
     String(seconds).padStart(2, '0');
 }
 
-update();
+loadSavedTarget();
 setInterval(update, 1000);
 </script>
 </body>
