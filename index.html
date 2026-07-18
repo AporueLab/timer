@@ -23,6 +23,13 @@
     background: #0f1720;
     box-shadow: 0 0 30px rgba(79, 209, 197, 0.15);
   }
+  .current-time {
+    font-size: 30px;
+    letter-spacing: 5px;
+    color: #fff;
+    margin-bottom: 12px;
+    font-variant-numeric: tabular-nums;
+  }
   h1 {
     font-size: 30px;
     letter-spacing: 5px;
@@ -77,6 +84,7 @@
 </head>
 <body>
   <div class="panel">
+    <div class="current-time" id="currentTime">--:--:--</div>
     <h1 id="title">Time Remaining Until 21:00</h1>
     <div class="clock" id="clock">--:--:--</div>
     <div class="status" id="status"></div>
@@ -171,6 +179,11 @@ function update() {
     String(hours).padStart(2, '0') + ':' +
     String(minutes).padStart(2, '0') + ':' +
     String(seconds).padStart(2, '0');
+
+  document.getElementById('currentTime').textContent =
+    String(now.getHours()).padStart(2, '0') + ':' +
+    String(now.getMinutes()).padStart(2, '0') + ':' +
+    String(now.getSeconds()).padStart(2, '0');
 }
 
 loadSavedTarget();
