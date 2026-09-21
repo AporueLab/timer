@@ -87,7 +87,7 @@
   <div class="panel">
     <div class="current-time" id="currentTime">--:--</div>
     <h1 id="title">Time Remaining Until 21:00</h1>
-    <div class="clock" id="clock">--:--:--</div>
+    <div class="clock" id="clock">--:--</div>
     <div class="status" id="status"></div>
     <div class="set-row">
       <input type="text" id="timeInput" value="21:00" maxlength="5" inputmode="numeric" placeholder="HH:MM" onkeydown="if (event.key === 'Enter') { setTarget(); this.blur(); }">
@@ -172,14 +172,13 @@ function update() {
     diff = target - now;
   }
 
-  const hours = Math.floor(diff / 3600000);
-  const minutes = Math.floor((diff % 3600000) / 60000);
-  const seconds = Math.floor((diff % 60000) / 1000);
+  const remainingMinutes = Math.ceil(diff / 60000);
+  const hours = Math.floor(remainingMinutes / 60);
+  const minutes = remainingMinutes % 60;
 
   document.getElementById('clock').textContent =
     String(hours).padStart(2, '0') + ':' +
-    String(minutes).padStart(2, '0') + ':' +
-    String(seconds).padStart(2, '0');
+    String(minutes).padStart(2, '0');
 
   document.getElementById('currentTime').textContent =
     String(now.getHours()).padStart(2, '0') + ':' +
